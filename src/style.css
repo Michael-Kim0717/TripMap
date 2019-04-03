@@ -1,0 +1,39 @@
+/* General */
+html, body, #map {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+/* Home */
+#legend {
+    position: absolute;
+    top: 5vh;
+    right: 5vw;
+
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 1rem;
+    width: 20vw;
+    z-index: 1000;
+}
+
+/* Modal */
+.modal-trigger {
+    position: absolute;
+    top: 5vh;
+    left: 5vw;
+    z-index: 1000;
+}
+
+#submitPlace {
+    display: block;
+    margin: 0 auto;
+}
+
+
+/* Map */
+#map {
+    position: static;
+}
