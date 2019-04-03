@@ -1,0 +1,87 @@
+<button data-target="modal1" class="modal-trigger btn black"><i class="material-icons">add</i> </button>
+
+<div class="container" id="legend">
+    Categories <br/> <hr>
+    Food : <img src="http://maps.google.com/mapfiles/ms/icons/green-dot.png"/> <br/>
+    Attraction : <img src="http://maps.google.com/mapfiles/ms/icons/blue-dot.png"/> <br/>
+    Activity : <img src="http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"/> <br/>
+</div>
+        
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="name" type="text" class="validate">
+                <label for="name">Name</label>
+            </div>
+            <div class="input-field col s12">
+                <input id="category" type="text" class="validate">
+                <label for="category">Category</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="latitude" type="number" class="validate">
+                <label for="latitude">Latitude</label>
+            </div>
+            <div class="input-field col s6">
+                <input id="longitude" type="number" class="validate">
+                <label for="longitude">Longitude</label>
+            </div>
+            <button class="btn black" id="submitPlace">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- Map instantiation -->
+<div style="width: 100%; height: 100%;">
+    <div id="map"></div>
+</div>
+
+<script>
+    /* Map elements. */
+    var map;
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 34.031760, lng: -118.279065},
+            zoom: 10
+        });
+
+        const LAX = new google.maps.Marker({
+            position: {lat: 33.9432746, lng: -118.4027894},
+            map: map,
+            label: 'LAX'
+        });
+        const airbnb = new google.maps.Marker({
+            position: {lat: 34.05602, lng: -118.30307},
+            map: map,
+            label: 'AIRBNB'
+        });
+        LAX.setMap(map);
+        airbnb.setMap(map);
+
+        /* Retrieve values from database and add markers to the page. */
+        firebase.database().ref('places').once('value', function(snapshot){
+            snapshot.forEach(function(childSnapshot){
+                if (childSnapshot.val().name !== undefined || childSnapshot.val().category !== undefined || childSnapshot.val().latitude !== undefined || childSnapshot.val().longitude !== undefined) {
+                    const marker = new google.maps.Marker({
+                        position: {lat: parseFloat(childSnapshot.val().latitude), lng: parseFloat(childSnapshot.val().longitude)},
+                        map: map,
+                        label: childSnapshot.val().name
+                    });
+                    switch ((childSnapshot.val().category).toLowerCase()) {
+                        case 'food':
+                            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+                            break;
+                        case 'attraction':
+                            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
+                            break;
+                        case 'activity':
+                            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/orange-dot.png');
+                            break;
+                    }
+                    marker.setMap(map);
+                }
+            })
+        })
+    }
+</script>
+<script async defer src='{{config.googleMapsAPIKEY}}'></script>
