@@ -18,13 +18,9 @@
                 <input id="category" type="text" class="validate">
                 <label for="category">Category</label>
             </div>
-            <div class="input-field col s6">
-                <input id="latitude" type="number" class="validate">
-                <label for="latitude">Latitude</label>
-            </div>
-            <div class="input-field col s6">
-                <input id="longitude" type="number" class="validate">
-                <label for="longitude">Longitude</label>
+            <div class="input-field col s12">
+                <input id="googleMapsLink" type="text" class="validate">
+                <label for="googleMapsLink">Google Maps Link</label>
             </div>
             <button class="btn black" id="submitPlace">Submit</button>
         </div>
@@ -40,48 +36,55 @@
     /* Map elements. */
     var map;
     function initMap() {
+        const markerArray = [];
+
         map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 34.031760, lng: -118.279065},
             zoom: 10
         });
 
-        const LAX = new google.maps.Marker({
+        const options = {
+            gridSize: 15,
+            imagePath: './extras/m'
+        }
+
+        var mc = new MarkerClusterer(map, markerArray, options);
+
+        mc.addMarker(new google.maps.Marker({
             position: {lat: 33.9432746, lng: -118.4027894},
             map: map,
             label: 'LAX'
-        });
-        const airbnb = new google.maps.Marker({
+        }));
+        mc.addMarker(new google.maps.Marker({
             position: {lat: 34.05602, lng: -118.30307},
             map: map,
             label: 'AIRBNB'
-        });
-        LAX.setMap(map);
-        airbnb.setMap(map);
+        }));
 
         /* Retrieve values from database and add markers to the page. */
         firebase.database().ref('places').once('value', function(snapshot){
             snapshot.forEach(function(childSnapshot){
                 if (childSnapshot.val().name !== undefined || childSnapshot.val().category !== undefined || childSnapshot.val().latitude !== undefined || childSnapshot.val().longitude !== undefined) {
-                    const marker = new google.maps.Marker({
+                    mc.addMarker(new google.maps.Marker({
                         position: {lat: parseFloat(childSnapshot.val().latitude), lng: parseFloat(childSnapshot.val().longitude)},
                         map: map,
+                        icon: grabIcon((childSnapshot.val().category).toLowerCase()),
                         label: childSnapshot.val().name
-                    });
-                    switch ((childSnapshot.val().category).toLowerCase()) {
-                        case 'food':
-                            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
-                            break;
-                        case 'attraction':
-                            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
-                            break;
-                        case 'activity':
-                            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/orange-dot.png');
-                            break;
-                    }
-                    marker.setMap(map);
+                    }));
                 }
             })
         })
+    }
+
+    function grabIcon (category) {
+        switch (category) {
+            case 'food':
+                return 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+            case 'attraction':
+                return 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+            case 'activity':
+                return 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+        }
     }
 </script>
 <script async defer src='{{config.googleMapsAPIKEY}}'></script>
