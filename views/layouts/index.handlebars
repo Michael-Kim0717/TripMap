@@ -50,15 +50,27 @@
 
         var mc = new MarkerClusterer(map, markerArray, options);
 
+        var styledArray = [
+            {
+                featureType: "all",
+                elementType: "labels",
+                stylers: [
+                { visibility: "off" }
+                ]
+            }
+        ];
+        map.set('styles', styledArray);
+
         mc.addMarker(new google.maps.Marker({
-            position: {lat: 33.9432746, lng: -118.4027894},
+            position: {lat: 35.771991, lng: 140.3906614},
             map: map,
-            label: 'LAX'
-        }));
-        mc.addMarker(new google.maps.Marker({
-            position: {lat: 34.05602, lng: -118.30307},
-            map: map,
-            label: 'AIRBNB'
+            label: {
+                textShadow: '0px 0px #000',
+                color: 'black',
+                fontWeight: 'bold',
+                fontSize: '15px',
+                text: "NARITA AIRPORT"
+            }
         }));
 
         /* Add current location onto the map. */
@@ -85,7 +97,12 @@
                         position: {lat: parseFloat(childSnapshot.val().latitude), lng: parseFloat(childSnapshot.val().longitude)},
                         map: map,
                         icon: grabIcon((childSnapshot.val().category).toLowerCase()),
-                        label: childSnapshot.val().name
+                        label: {
+                            color: 'black',
+                            fontWeight: 'bold',
+                            fontSize: '15px',
+                            text: childSnapshot.val().name
+                        }
                     }));
                 }
             })
