@@ -39,8 +39,8 @@
         const markerArray = [];
 
         map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 34.031760, lng: -118.279065},
-            zoom: 10
+            center: {lat: 36.2048, lng: 138.2529},
+            zoom: 7
         });
 
         const options = {
@@ -60,6 +60,22 @@
             map: map,
             label: 'AIRBNB'
         }));
+
+        /* Add current location onto the map. */
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                mc.addMarker(new google.maps.Marker({
+                    position: {lat: pos.lat, lng: pos.lng},
+                    map: map,
+                    label: 'ME'
+                }));
+            });
+        }
 
         /* Retrieve values from database and add markers to the page. */
         firebase.database().ref('places').once('value', function(snapshot){
